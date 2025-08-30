@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SMA.Application.DTOs;
+using SMA.Domain.Entities;
 
-namespace SMA.Application.Interfaces
+namespace SMA.Application.Interfaces;
+
+public interface IDeviceService
 {
-    internal interface IDeviceService
-    {
-    }
+    Task<Device> CreateAsync(DeviceDto dto, CancellationToken ct);
+    Task<Device?> GetByIdAsync(long id, CancellationToken ct);
 }

@@ -1,33 +1,50 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using SMA.Api.Requests;
+using SMA.Api.Responses;
+using SMA.Application.DTOs;
+using SMA.Application.Interfaces;
 
 namespace SMA.Api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class DevicesController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly IDeviceService _service;
+        private readonly IMapper _mapper;
 
-        private readonly ILogger<DevicesController> _logger;
-
-        public DevicesController(ILogger<DevicesController> logger)
+        public DevicesController(IDeviceService service, IMapper mapper)
         {
-            _logger = logger;
+            _service = service;
+            _mapper = mapper;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+
+        [HttpPost]
+        [ProducesResponseType(typeof(DeviceResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<DeviceResponse>> Create([FromBody] DeviceCreateRequest request, CancellationToken ct)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            if (!ModelState.IsValid) return ValidationProblem(ModelState);
+
+            var dto = _mapper.Map<DeviceDto>(request);
+            var device = await _service.CreateAsync(dto, ct);
+
+            var response = _mapper.Map<DeviceResponse>(device);
+
+            return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
+
+        }
+
+
+        [HttpGet("{id:long}")]
+        public async Task<ActionResult<DeviceResponse>> GetById(long id, CancellationToken ct)
+        {
+            var device = await _service.GetByIdAsync(id, ct);
+            if (device is null) return NotFound();
+
+            return Ok(_mapper.Map<DeviceResponse>(device));
         }
     }
 }

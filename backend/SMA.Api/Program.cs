@@ -1,20 +1,31 @@
-using SMA.Application;     // sua camada Application
-using SMA.Infrastructure; // sua camada Infrastructure
+using SMA.Application;
+using SMA.Application.Interfaces;
+using SMA.Infrastructure;
+using SMA.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ?? 1. Configurações principais
+// Configurações principais
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//Registro das dependências das suas camadas
+// AutoMapper para Application e API
+builder.Services.AddAutoMapper(
+    typeof(SMA.Application.Mappings.ApplicationProfile).Assembly,
+    typeof(SMA.Api.Mappings.ApiProfile).Assembly
+);
+
+// Dependências das camadas
 builder.Services.AddInfrastructureDI(builder.Configuration);
 builder.Services.AddApplicationDI();
 
+builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+
+// Pipeline de execução da API
 var app = builder.Build();
 
-//Pipeline de execução
+// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,10 +33,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
-//Mapear controllers automaticamente
 app.MapControllers();
 
 app.Run();

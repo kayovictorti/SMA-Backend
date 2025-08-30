@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace SMA.Domain.Entities;
 
-namespace SMA.Domain.Entities
+public class Device : BaseEntity
 {
-    internal class Device
-    {
-    }
+    public string Name { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public string IntegrationId { get; set; } = string.Empty;
 }
