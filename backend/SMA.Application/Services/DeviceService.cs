@@ -45,9 +45,27 @@ public class DeviceService : IDeviceService
         return await _repository.GetAllAsync(ct);
     }
 
-
     public async Task<Device?> GetByIdAsync(long id, CancellationToken ct)
     {
         return await _repository.GetByIdAsync(id, ct);
+    }
+
+    public async Task<Device?> UpdateAsync(long id, DeviceDto dto, CancellationToken ct)
+    {
+        try
+        {
+            var device = await _repository.GetByIdForUpdateAsync(id, ct);
+            if (device is null) return null;
+
+            device.Name = dto.Name;
+            device.Location = dto.Location;
+
+            await _repository.UpdateAsync(device, ct);
+            return device;
+        }
+        catch
+        {
+            throw;
+        }
     }
 }

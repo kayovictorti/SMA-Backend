@@ -8,5 +8,6 @@ public interface IDeviceRepository
     Task UpdateAsync(Device device, CancellationToken ct);
     Task<Device?> GetByIdAsync(long id, CancellationToken ct);
     Task<List<Device>> GetAllAsync(CancellationToken ct);
+    Task<Device?> GetByIdForUpdateAsync(long id, CancellationToken ct);
 }
 

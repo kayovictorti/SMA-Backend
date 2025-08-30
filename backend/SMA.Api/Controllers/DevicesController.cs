@@ -59,5 +59,22 @@ namespace SMA.Api.Controllers
             var response = _mapper.Map<DeviceResponse>(device);
             return Ok(response);
         }
+
+        [HttpPut("{id:long}")]
+        [ProducesResponseType(typeof(DeviceResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<DeviceResponse>> Update(long id, [FromBody] DeviceUpdateRequest request, CancellationToken ct)
+        {
+            if (!ModelState.IsValid) return ValidationProblem(ModelState);
+
+            var dto = _mapper.Map<DeviceDto>(request);
+            var updated = await _service.UpdateAsync(id, dto, ct);
+
+            if (updated is null) return NotFound();
+
+            var response = _mapper.Map<DeviceResponse>(updated);
+            return Ok(response);
+        }
     }
 }

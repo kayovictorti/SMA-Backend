@@ -12,5 +12,6 @@ public class ApiProfile : Profile
     {
         CreateMap<DeviceCreateRequest, DeviceDto>();
         CreateMap<Device, DeviceResponse>();
+        CreateMap<DeviceUpdateRequest, DeviceDto>();
     }
 }

@@ -39,5 +39,8 @@ namespace SMA.Infrastructure.Repositories
                 .AsNoTracking()
                 .ToListAsync(ct);
         }
+
+        public Task<Device?> GetByIdForUpdateAsync(long id, CancellationToken ct) =>
+            _db.Devices.FirstOrDefaultAsync(d => d.Id == id, ct);
     }
 }
