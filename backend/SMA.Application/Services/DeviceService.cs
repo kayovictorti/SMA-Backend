@@ -40,6 +40,12 @@ public class DeviceService : IDeviceService
         }
     }
 
+    public async Task<List<Device>> GetAllAsync(CancellationToken ct)
+    {
+        return await _repository.GetAllAsync(ct);
+    }
+
+
     public async Task<Device?> GetByIdAsync(long id, CancellationToken ct) =>
         await _repository.GetByIdAsync(id, ct);
 }

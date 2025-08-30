@@ -37,6 +37,16 @@ namespace SMA.Api.Controllers
 
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(List<DeviceResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<DeviceResponse>>> GetAll(CancellationToken ct)
+        {
+            var devices = await _service.GetAllAsync(ct);
+
+            var response = _mapper.Map<List<DeviceResponse>>(devices);
+
+            return Ok(response);
+        }
 
         [HttpGet("{id:long}")]
         public async Task<ActionResult<DeviceResponse>> GetById(long id, CancellationToken ct)
