@@ -46,6 +46,8 @@ public class DeviceService : IDeviceService
     }
 
 
-    public async Task<Device?> GetByIdAsync(long id, CancellationToken ct) =>
-        await _repository.GetByIdAsync(id, ct);
+    public async Task<Device?> GetByIdAsync(long id, CancellationToken ct)
+    {
+        return await _repository.GetByIdAsync(id, ct);
+    }
 }

@@ -49,12 +49,15 @@ namespace SMA.Api.Controllers
         }
 
         [HttpGet("{id:long}")]
+        [ProducesResponseType(typeof(DeviceResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<DeviceResponse>> GetById(long id, CancellationToken ct)
         {
             var device = await _service.GetByIdAsync(id, ct);
             if (device is null) return NotFound();
 
-            return Ok(_mapper.Map<DeviceResponse>(device));
+            var response = _mapper.Map<DeviceResponse>(device);
+            return Ok(response);
         }
     }
 }
