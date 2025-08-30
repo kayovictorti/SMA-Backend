@@ -2,6 +2,7 @@
 using SMA.Application.DTOs;
 using SMA.Application.Interfaces;
 using SMA.Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace SMA.Application.Services;
 
@@ -10,17 +11,18 @@ public class DeviceService : IDeviceService
     private readonly IDeviceRepository _repository;
     private readonly IMapper _mapper;
     private readonly IIotIntegrationClient _iotIntegrationClient;
+    private readonly ILogger<DeviceService> _logger;
 
-    public DeviceService(IDeviceRepository repository, IMapper mapper, IIotIntegrationClient iotIntegrationClient)
+    public DeviceService(IDeviceRepository repository, IMapper mapper, IIotIntegrationClient iotIntegrationClient, ILogger<DeviceService> logger)
     {
         _repository = repository;
         _mapper = mapper;
         _iotIntegrationClient = iotIntegrationClient;
+        _logger = logger;
     }
 
     public async Task<Device> CreateAsync(DeviceDto dto, CancellationToken ct)
     {
-
         try
         {
             var device = _mapper.Map<Device>(dto);
@@ -34,20 +36,37 @@ public class DeviceService : IDeviceService
 
             return device;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao criar dispositivo");
             throw;
         }
     }
 
     public async Task<List<Device>> GetAllAsync(CancellationToken ct)
     {
-        return await _repository.GetAllAsync(ct);
+        try
+        {
+            return await _repository.GetAllAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter todos os dispositivos");
+            throw;
+        }
     }
 
     public async Task<Device?> GetByIdAsync(long id, CancellationToken ct)
     {
-        return await _repository.GetByIdAsync(id, ct);
+        try
+        {
+            return await _repository.GetByIdAsync(id, ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao obter dispositivo por id {DeviceId}", id);
+            throw;
+        }
     }
 
     public async Task<Device?> UpdateAsync(long id, DeviceDto dto, CancellationToken ct)
@@ -63,8 +82,38 @@ public class DeviceService : IDeviceService
             await _repository.UpdateAsync(device, ct);
             return device;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "Erro ao atualizar dispositivo com id {DeviceId}", id);
+            throw;
+        }
+    }
+
+    public async Task<bool> DeleteAsync(long id, CancellationToken ct)
+    {
+        try
+        {
+            var device = await _repository.GetByIdForUpdateAsync(id, ct);
+            if (device is null) return false;
+
+            if (!string.IsNullOrWhiteSpace(device.IntegrationId))
+            {
+                try
+                {
+                    await _iotIntegrationClient.UnregisterAsync(device.IntegrationId, ct);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Falha ao desregistrar dispositivo do IoT. IntegrationId: {IntegrationId}", device.IntegrationId);
+                }
+            }
+
+            await _repository.DeleteAsync(device, ct);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Erro ao tentar deletar o dispositivo com id {DeviceId}", id);
             throw;
         }
     }

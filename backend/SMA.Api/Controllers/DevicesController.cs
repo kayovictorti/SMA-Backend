@@ -76,5 +76,16 @@ namespace SMA.Api.Controllers
             var response = _mapper.Map<DeviceResponse>(updated);
             return Ok(response);
         }
+
+        [HttpDelete("{id:long}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> Delete(long id, CancellationToken ct)
+        {
+            var ok = await _service.DeleteAsync(id, ct);
+            if (!ok) return NotFound();
+
+            return NoContent();
+        }
     }
 }

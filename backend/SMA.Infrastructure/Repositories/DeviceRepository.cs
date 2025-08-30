@@ -40,7 +40,16 @@ namespace SMA.Infrastructure.Repositories
                 .ToListAsync(ct);
         }
 
-        public Task<Device?> GetByIdForUpdateAsync(long id, CancellationToken ct) =>
-            _db.Devices.FirstOrDefaultAsync(d => d.Id == id, ct);
+        public async Task<Device?> GetByIdForUpdateAsync(long id, CancellationToken ct)
+        {
+            return await _db.Devices.FirstOrDefaultAsync(d => d.Id == id, ct);
+        }
+
+        public async Task DeleteAsync(Device device, CancellationToken ct)
+        {
+            device.DeletionDate = DateTime.UtcNow;
+            _db.Devices.Update(device);
+            await _db.SaveChangesAsync(ct);
+        }
     }
 }

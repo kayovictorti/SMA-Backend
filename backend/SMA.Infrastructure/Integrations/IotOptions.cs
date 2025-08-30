@@ -51,4 +51,19 @@ public class IotIntegrationClient : IIotIntegrationClient
 
     }
 
+    public async Task UnregisterAsync(string integrationId, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(_opts.BaseUrl))
+        {
+            _logger.LogWarning("Iot.BaseUrl não configurado. Ignorando /unregister (MOCK).");
+            return;
+        }
+
+        var res = await _http.DeleteAsync($"/unregister/{integrationId}", ct);
+        if (!res.IsSuccessStatusCode)
+        {
+            _logger.LogError("Falha no /unregister IoT. HTTP {Status}", res.StatusCode);
+        }
+    }
+
 }
