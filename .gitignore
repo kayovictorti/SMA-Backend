@@ -18,23 +18,23 @@ out/
 
 # NuGet
 *.nupkg
-# NuGet Packages folder
-packages/
-# The packages folder can be ignored because of PackageReference
 *.nupkg.metadata
+packages/
 
 # ASP.NET Core
-appsettings.*.json
+appsettings.Development.json
+appsettings.Local.json
 wwwroot/
 
-# Entity Framework
+# Entity Framework / SQLite
 *.db
+*.sqlite*
 *.db-shm
 *.db-wal
-*.sqlite
 
 # Logs
 *.log
+logs/
 
 # OS generated files
 .DS_Store
@@ -43,3 +43,8 @@ Thumbs.db
 # Others
 *.swp
 *.tmp
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
