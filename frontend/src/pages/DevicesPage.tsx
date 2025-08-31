@@ -1,13 +1,43 @@
 import { useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useListDevices, useCreateDevice, useUpdateDevice, useDeleteDevice } from "../hooks/useDevices";
 import DeviceForm from "../components/DeviceForm";
 import { Device } from "../types";
+import Swal from "sweetalert2";
+import type { AxiosError } from "axios";
+
+function extractErrorMessage(err: any): string {
+  const ax = err as AxiosError<any>;
+  const data: any = ax?.response?.data;
+  if (data) {
+    if (typeof data === "string") return data;
+    if (data.title && data.detail) return `${data.title}: ${data.detail}`;
+    if (data.title) return data.title;
+    if (data.message) return data.message;
+    if (data.errors && typeof data.errors === "object") {
+      const messages = Object.values<any>(data.errors).flat().join("; ");
+      if (messages) return messages;
+    }
+  }
+  return ax?.message || "Ocorreu um erro. Tente novamente.";
+}
+
+function isIotConnectivityError(err: any): boolean {
+  const msg = (extractErrorMessage(err) || "").toLowerCase();
+  return (
+    msg.includes("localhost:5000") ||
+    msg.includes("socketexception") ||
+    msg.includes("httprequestexception") ||
+    msg.includes("iot")
+  );
+}
 
 export default function DevicesPage() {
   const { data: devices, isLoading } = useListDevices();
   const createM = useCreateDevice();
   const updateM = useUpdateDevice();
   const deleteM = useDeleteDevice();
+  const qc = useQueryClient();
 
   const [editing, setEditing] = useState<Device | null>(null);
   const list = useMemo(()=> devices ?? [], [devices]);
@@ -20,7 +50,44 @@ export default function DevicesPage() {
         <div className="card">
           <h2 className="font-semibold mb-2">Cadastrar novo</h2>
           <DeviceForm onSubmit={async (dto) => {
-            await createM.mutateAsync(dto);
+            await createM.mutateAsync(dto, {
+              onSuccess: async (created) => {
+                const integrationId = (created as any)?.integrationId as string | undefined;
+                if (integrationId && integrationId.startsWith("mock-")) {
+                  await Swal.fire({
+                    title: "Salvo (sem integração)",
+                    text: "Dispositivo salvo, mas não houve comunicação com a API externa (IoT).",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                  });
+                } else {
+                  await Swal.fire({
+                    title: "Sucesso",
+                    text: "Dispositivo cadastrado com sucesso.",
+                    icon: "success",
+                    confirmButtonText: "OK",
+                  });
+                }
+              },
+              onError: async (err) => {
+                if (isIotConnectivityError(err)) {
+                  await Swal.fire({
+                    title: "Salvo (sem integração)",
+                    text: "Dispositivo salvo, mas não houve comunicação com a API externa (IoT).",
+                    icon: "info",
+                    confirmButtonText: "OK",
+                  });
+                  await qc.invalidateQueries({ queryKey: ["devices"] });
+                } else {
+                  await Swal.fire({
+                    title: "Erro ao cadastrar",
+                    text: extractErrorMessage(err),
+                    icon: "error",
+                    confirmButtonText: "OK",
+                  });
+                }
+              },
+            });
           }} />
         </div>
 
@@ -30,8 +97,25 @@ export default function DevicesPage() {
             <DeviceForm
               initial={editing}
               onSubmit={async (dto) => {
-                await updateM.mutateAsync({ ...editing, ...dto } as Device);
-                setEditing(null);
+                await updateM.mutateAsync({ ...editing, ...dto } as Device, {
+                  onSuccess: async () => {
+                    setEditing(null);
+                    await Swal.fire({
+                      title: "Atualizado",
+                      text: "Dispositivo atualizado com sucesso.",
+                      icon: "success",
+                      confirmButtonText: "OK",
+                    });
+                  },
+                  onError: async (err) => {
+                    await Swal.fire({
+                      title: "Erro ao atualizar",
+                      text: extractErrorMessage(err),
+                      icon: "error",
+                      confirmButtonText: "OK",
+                    });
+                  },
+                });
               }}
               onCancel={() => setEditing(null)}
             />
@@ -66,7 +150,36 @@ export default function DevicesPage() {
                   <td className="text-xs text-gray-500">{d.integrationId ?? "-"}</td>
                   <td className="flex gap-2">
                     <button className="btn-outline" onClick={()=>setEditing(d)}>Editar</button>
-                    <button className="btn" onClick={()=>deleteM.mutateAsync(d.id!)}>Excluir</button>
+                    <button className="btn" onClick={async ()=>{
+                      const res = await Swal.fire({
+                        title: "Excluir dispositivo?",
+                        text: `ID ${d.id} - ${d.name}`,
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Sim, excluir",
+                        cancelButtonText: "Cancelar",
+                      });
+                      if (res.isConfirmed) {
+                        await deleteM.mutateAsync(d.id!, {
+                          onSuccess: async () => {
+                            await Swal.fire({
+                              title: "Excluído",
+                              text: "Dispositivo removido com sucesso.",
+                              icon: "success",
+                              confirmButtonText: "OK",
+                            });
+                          },
+                          onError: async (err) => {
+                            await Swal.fire({
+                              title: "Erro ao excluir",
+                              text: extractErrorMessage(err),
+                              icon: "error",
+                              confirmButtonText: "OK",
+                            });
+                          },
+                        });
+                      }
+                    }}>Excluir</button>
                   </td>
                 </tr>
               ))}
@@ -80,4 +193,3 @@ export default function DevicesPage() {
     </div>
   );
 }
-
