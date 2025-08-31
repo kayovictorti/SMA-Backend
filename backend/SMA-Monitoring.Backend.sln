@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMA.Infrastructure", "SMA.I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMA.Api", "SMA.Api\SMA.Api.csproj", "{1F9DD109-D0A5-4A5C-8E84-9E0697DCC100}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMA.Tests", "..\tests\SMA.Tests\SMA.Tests.csproj", "{ABACACAE-81D6-68E3-6FEA-1D9DAFDDD974}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,9 +37,16 @@ Global
 		{1F9DD109-D0A5-4A5C-8E84-9E0697DCC100}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F9DD109-D0A5-4A5C-8E84-9E0697DCC100}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F9DD109-D0A5-4A5C-8E84-9E0697DCC100}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABACACAE-81D6-68E3-6FEA-1D9DAFDDD974}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABACACAE-81D6-68E3-6FEA-1D9DAFDDD974}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABACACAE-81D6-68E3-6FEA-1D9DAFDDD974}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABACACAE-81D6-68E3-6FEA-1D9DAFDDD974}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ABACACAE-81D6-68E3-6FEA-1D9DAFDDD974} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16555410-0676-4F71-BA10-413FC2067045}
