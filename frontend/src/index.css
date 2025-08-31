@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* utilidades simples */
+.table th, .table td { @apply px-3 py-2; }
+.btn { @apply px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50; }
+.btn-outline { @apply px-3 py-2 rounded border border-gray-300 hover:bg-gray-100; }
+.input { @apply border border-gray-300 rounded px-3 py-2 w-full; }
+.card { @apply bg-white rounded shadow p-4; }
+.page { @apply max-w-5xl mx-auto p-4 space-y-4; }
+.badge { @apply inline-flex items-center rounded px-2 py-0.5 text-sm; }
+.badge-danger { @apply bg-red-100 text-red-700; }
+.badge-ok { @apply bg-green-100 text-green-700; }
+
