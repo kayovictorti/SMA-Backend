@@ -10,5 +10,6 @@ public interface IDeviceRepository
     Task<List<Device>> GetAllAsync(CancellationToken ct);
     Task<Device?> GetByIdForUpdateAsync(long id, CancellationToken ct);
     Task DeleteAsync(Device device, CancellationToken ct);
+    Task<Device?> GetByIntegrationIdAsync(string integrationId, CancellationToken ct);
 }
 

@@ -1,4 +1,4 @@
-﻿namespace SMA.Api.Responses;
+﻿namespace SMA.Api.Responses.DevicesControllerResponse;
 
 public class DeviceResponse
 {

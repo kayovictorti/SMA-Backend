@@ -37,7 +37,9 @@ namespace SMA.Infrastructure
 
             services.AddScoped<IIotIntegrationClient, IotIntegrationClient>();
             services.AddScoped<IDeviceService, DeviceService>();
+            services.AddScoped<IEventService, EventService>();
             services.AddScoped<IDeviceRepository, DeviceRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
 
             return services;
         }

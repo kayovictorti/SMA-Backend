@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using SMA.Api.Requests;
-using SMA.Api.Responses;
+using SMA.Api.Requests.DevicesControllerRequests;
+using SMA.Api.Responses.DevicesControllerResponse;
 using SMA.Application.DTOs;
 using SMA.Application.Interfaces;
 

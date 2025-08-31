@@ -20,8 +20,6 @@ builder.Services.AddAutoMapper(
 builder.Services.AddInfrastructureDI(builder.Configuration);
 builder.Services.AddApplicationDI();
 
-builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
-
 // Pipeline de execução da API
 var app = builder.Build();
 

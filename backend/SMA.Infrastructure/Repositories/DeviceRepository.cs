@@ -51,5 +51,12 @@ namespace SMA.Infrastructure.Repositories
             _db.Devices.Update(device);
             await _db.SaveChangesAsync(ct);
         }
+
+        public async Task<Device?> GetByIntegrationIdAsync(string integrationId, CancellationToken ct)
+        {
+            return await _db.Devices
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.IntegrationId == integrationId, ct);
+        }
     }
 }
