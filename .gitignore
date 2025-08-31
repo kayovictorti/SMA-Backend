@@ -48,3 +48,27 @@ Thumbs.db
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+
+# Test results / Coverage
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Node logs (frontend)
+frontend/npm-debug.log*
+frontend/yarn-error.log
+frontend/pnpm-debug.log
+
+# Frontend env variants
+frontend/.env.*
+
+# Tool caches
+**/.eslintcache
+**/.parcel-cache
+**/.turbo
+**/.cache
+**/.vite
+
+# Analysis tools
+.sonarqube/
