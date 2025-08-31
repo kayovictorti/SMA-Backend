@@ -4,6 +4,7 @@ using SMA.Api.Requests;
 using SMA.Api.Responses;
 using SMA.Application.DTOs;
 using SMA.Application.Interfaces;
+using SMA.Domain.Entities;
 
 namespace SMA.Api.Controllers
 {
@@ -43,5 +44,25 @@ namespace SMA.Api.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(List<EventResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<EventResponse>>> GetAll(
+            [FromQuery] long? deviceId,
+            [FromQuery] int take = 50,
+            CancellationToken ct = default)
+        {
+            if (take <= 0) take = 50;
+            if (take > 500) take = 500;
+
+            List<Event> events;
+            if (deviceId.HasValue)
+                events = await _service.GetByDeviceAsync(deviceId.Value, take, ct);
+            else
+                events = await _service.GetLatestAsync(take, ct);
+
+            var response = _mapper.Map<List<EventResponse>>(events);
+            return Ok(response);
+        }
     }
-    }
+}
