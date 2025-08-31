@@ -12,7 +12,6 @@ export function useEvents(opts?: { strategy?: Strategy; limit?: number; pollMs?:
 
   const sseUrl = import.meta.env.VITE_EVENTS_SSE_URL as string | undefined;
 
-  // Polling
   const polling = useQuery({
     queryKey: ["events", "polling", limit],
     queryFn: async (): Promise<EventItem[]> => {
@@ -23,7 +22,6 @@ export function useEvents(opts?: { strategy?: Strategy; limit?: number; pollMs?:
     enabled: strategy === "polling",
   });
 
-  // SSE
   const [sseData, setSseData] = useState<EventItem[]>([]);
   const sseRef = useRef<EventSource | null>(null);
 
@@ -37,7 +35,7 @@ export function useEvents(opts?: { strategy?: Strategy; limit?: number; pollMs?:
         setSseData(prev => [item, ...prev].slice(0, limit));
       } catch {}
     };
-    es.onerror = () => { /* opcional: logar erro */ };
+    es.onerror = () => {};
     return () => { es.close(); sseRef.current = null; };
   }, [strategy, sseUrl, limit]);
 
@@ -53,4 +51,3 @@ export function useEvents(opts?: { strategy?: Strategy; limit?: number; pollMs?:
     strategy,
   };
 }
-

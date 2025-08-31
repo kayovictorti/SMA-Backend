@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* utilidades simples */
 .table th, .table td { @apply px-3 py-2; }
 .btn { @apply px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50; }
 .btn-outline { @apply px-3 py-2 rounded border border-gray-300 hover:bg-gray-100; }
@@ -12,4 +11,3 @@
 .badge { @apply inline-flex items-center rounded px-2 py-0.5 text-sm; }
 .badge-danger { @apply bg-red-100 text-red-700; }
 .badge-ok { @apply bg-green-100 text-green-700; }
-
