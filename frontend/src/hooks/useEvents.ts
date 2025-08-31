@@ -12,11 +12,24 @@ export function useEvents(opts?: { strategy?: Strategy; limit?: number; pollMs?:
 
   const sseUrl = import.meta.env.VITE_EVENTS_SSE_URL as string | undefined;
 
+  function normalizeEvent(x: any): EventItem {
+    // Aceita tanto camelCase (frontend) quanto PascalCase (backend ASP.NET)
+    return EventSchema.parse({
+      id: x.id ?? x.Id,
+      deviceId: x.deviceId ?? x.DeviceId,
+      timestamp: x.timestamp ?? x.occurredAt ?? x.OccurredAt ?? x.creationDate ?? x.CreationDate,
+      temperature: x.temperature ?? x.Temperature ?? null,
+      humidity: x.humidity ?? x.Humidity ?? null,
+      isAlarm: (x.isAlarm ?? x.IsAlarm) ?? false,
+      payload: x.payload,
+    });
+  }
+
   const polling = useQuery({
     queryKey: ["events", "polling", limit],
     queryFn: async (): Promise<EventItem[]> => {
-      const { data } = await api.get(`/api/events`, { params: { limit } });
-      return (data as any[]).map(x => EventSchema.parse(x));
+      const { data } = await api.get(`/api/events`, { params: { take: limit } });
+      return (data as any[]).map(normalizeEvent);
     },
     refetchInterval: strategy === "polling" ? pollMs : false,
     enabled: strategy === "polling",
@@ -31,7 +44,7 @@ export function useEvents(opts?: { strategy?: Strategy; limit?: number; pollMs?:
     sseRef.current = es;
     es.onmessage = (evt) => {
       try {
-        const item = EventSchema.parse(JSON.parse(evt.data));
+        const item = normalizeEvent(JSON.parse(evt.data));
         setSseData(prev => [item, ...prev].slice(0, limit));
       } catch {}
     };
