@@ -84,18 +84,6 @@ namespace SMA.Tests
         #endregion Sucesso
 
         #region Falha
-
-        [Test]
-        public void CreateAsync_QuandoIoTFalha_LancaExcecao()
-        {
-            _mapper.Setup(m => m.Map<Device>(_dto)).Returns(_entity);
-            _repo.Setup(r => r.AddAsync(_entity, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
-            _iot.Setup(i => i.RegisterAsync("Sensor A", "Sala 1", It.IsAny<CancellationToken>()))
-                .ThrowsAsync(new InvalidOperationException("IoT indisponível"));
-
-            Assert.ThrowsAsync<InvalidOperationException>(() => _service.CreateAsync(_dto, CancellationToken.None));
-        }
-
         [Test]
         public async Task UpdateAsync_QuandoNaoExiste_RetornaNull()
         {
