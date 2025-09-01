@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SMA.Application.Interfaces;
 using SMA.Infrastructure.Integrations.ObjectMock;
@@ -26,12 +26,12 @@ public class IotIntegrationClient : IIotIntegrationClient
     {
         if (string.IsNullOrWhiteSpace(_opts.BaseUrl))
         {
-            _logger.LogWarning("Iot.BaseUrl não configurado. Usando MOCK para integrationId.");
-            return $"mock-{Guid.NewGuid()}";
+            _logger.LogWarning("Iot.BaseUrl nao configurado. Prosseguindo sem IntegrationId (null).");
+            return string.Empty;
         }
 
         if (string.IsNullOrWhiteSpace(_opts.CallbackUrl))
-            throw new InvalidOperationException("Iot.CallbackUrl não está configurado.");
+            throw new InvalidOperationException("Iot.CallbackUrl nao esta configurado.");
 
         var payload = new
         {
@@ -44,11 +44,11 @@ public class IotIntegrationClient : IIotIntegrationClient
         if (!res.IsSuccessStatusCode)
         {
             _logger.LogError("Falha no /register IoT. HTTP {Status}", res.StatusCode);
-            return $"mock-{Guid.NewGuid()}";
+            return string.Empty;
         }
 
         var data = await res.Content.ReadFromJsonAsync<RegisterResponse>(cancellationToken: ct)
-                   ?? throw new InvalidOperationException("Resposta do IoT inválida");
+                   ?? throw new InvalidOperationException("Resposta do IoT invalida");
         return data.IntegrationId;
     }
 
@@ -56,7 +56,7 @@ public class IotIntegrationClient : IIotIntegrationClient
     {
         if (string.IsNullOrWhiteSpace(_opts.BaseUrl))
         {
-            _logger.LogWarning("Iot.BaseUrl não configurado. Ignorando /unregister (MOCK).");
+            _logger.LogWarning("Iot.BaseUrl nao configurado. Ignorando /unregister.");
             return;
         }
 
@@ -65,3 +65,4 @@ public class IotIntegrationClient : IIotIntegrationClient
             _logger.LogError("Falha no /unregister IoT. HTTP {Status}", res.StatusCode);
     }
 }
+

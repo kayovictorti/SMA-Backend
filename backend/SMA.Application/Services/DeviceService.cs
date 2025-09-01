@@ -32,14 +32,15 @@ public class DeviceService : IDeviceService
             try
             {
                 var integrationId = await _iotIntegrationClient.RegisterAsync(device.Name, device.Location, ct);
-                device.IntegrationId = integrationId;
-                await _repository.UpdateAsync(device, ct);
+                if (!string.IsNullOrWhiteSpace(integrationId))
+                {
+                    device.IntegrationId = integrationId;
+                    await _repository.UpdateAsync(device, ct);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Falha ao registrar dispositivo no IoT; prosseguindo com MOCK.");
-                device.IntegrationId ??= $"mock-{Guid.NewGuid()}";
-                await _repository.UpdateAsync(device, ct);
+                _logger.LogWarning(ex, "Falha ao registrar dispositivo no IoT; mantendo IntegrationId null.");
             }
 
             return device;

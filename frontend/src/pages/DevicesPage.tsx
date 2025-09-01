@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useListDevices, useCreateDevice, useUpdateDevice, useDeleteDevice } from "../hooks/useDevices";
 import DeviceForm from "../components/DeviceForm";
@@ -52,8 +52,8 @@ export default function DevicesPage() {
           <DeviceForm onSubmit={async (dto) => {
             await createM.mutateAsync(dto, {
               onSuccess: async (created) => {
-                const integrationId = (created as any)?.integrationId as string | undefined;
-                if (integrationId && integrationId.startsWith("mock-")) {
+                const integrationId = (created as any)?.integrationId as string | null | undefined;
+                if (!integrationId) {
                   await Swal.fire({
                     title: "Salvo (sem integração)",
                     text: "Dispositivo salvo, mas não houve comunicação com a API externa (IoT).",
@@ -134,23 +134,24 @@ export default function DevicesPage() {
           <table className="table w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Localização</th>
-                <th>IntegrationId</th>
-                <th></th>
+                <th className="text-center">ID</th>
+                <th className="text-center">Nome</th>
+                <th className="text-center">Localização</th>
+                <th className="text-center">IntegrationId</th>
+                <th className="text-center w-32">Ação</th>
               </tr>
             </thead>
             <tbody>
               {list.map(d => (
-                <tr key={d.id} className="border-b">
+                <tr key={d.id} className="border-b text-center">
                   <td>{d.id}</td>
                   <td>{d.name}</td>
                   <td>{d.location}</td>
                   <td className="text-xs text-gray-500">{d.integrationId ?? "-"}</td>
-                  <td className="flex gap-2">
-                    <button className="btn-outline" onClick={()=>setEditing(d)}>Editar</button>
-                    <button className="btn" onClick={async ()=>{
+                  <td className="text-center">
+                    <div className="flex justify-center gap-2">
+                      <button className="btn-outline" onClick={()=>setEditing(d)}>Editar</button>
+                      <button className="btn" onClick={async ()=>{
                       const res = await Swal.fire({
                         title: "Excluir dispositivo?",
                         text: `ID ${d.id} - ${d.name}`,
@@ -180,6 +181,7 @@ export default function DevicesPage() {
                         });
                       }
                     }}>Excluir</button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -193,3 +195,4 @@ export default function DevicesPage() {
     </div>
   );
 }
+

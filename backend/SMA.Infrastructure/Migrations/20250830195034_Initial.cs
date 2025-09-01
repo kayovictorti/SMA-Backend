@@ -19,7 +19,7 @@ namespace SMA.Infrastructure.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(type: "TEXT", nullable: false),
                     Location = table.Column<string>(type: "TEXT", nullable: false),
-                    IntegrationId = table.Column<string>(type: "TEXT", nullable: false),
+                    IntegrationId = table.Column<string>(type: "TEXT", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     DeletionDate = table.Column<DateTime>(type: "TEXT", nullable: true)

@@ -33,7 +33,6 @@ namespace SMA.Infrastructure.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("IntegrationId")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Location")
